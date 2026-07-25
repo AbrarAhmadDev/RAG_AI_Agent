@@ -148,12 +148,9 @@ AI-RAG-Agent/
 │   └── RAG_AI_Agent_Sanitized.json
 │
 ├── screenshots/
-│   ├── workflow.png
-│   ├── chat.png
-│   └── query.png
-│
-└── sample_docs/
-    └── sample.pdf
+    ├── workflow.png
+    ├── chat.png
+    └── query.png
 ```
 
 ---
@@ -199,22 +196,6 @@ Create a pgvector-enabled table in Supabase.
 Upload PDFs into the configured Google Drive folder.
 
 The workflow automatically indexes them.
-
----
-
-# Future Improvements
-
-- Hybrid Search (BM25 + Vector Search)
-- Metadata Filtering
-- Multi-document Collections
-- Streaming Responses
-- Source Citations
-- Page References
-- OCR Support
-- Re-ranking
-- Docker Deployment
-- User Authentication
-- REST API
 
 ---
 
