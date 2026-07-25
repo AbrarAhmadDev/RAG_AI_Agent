@@ -125,13 +125,13 @@ When a user asks a question:
 
 ## Chat Interface
 
-![Chat](screenshots/chat.png)
+![Chat](screenshots/chat.jpeg)
 
 ---
 
 ## Example Conversation
 
-![Conversation](screenshots/query.png)
+![Conversation](screenshots/query.jpeg)
 
 ---
 
