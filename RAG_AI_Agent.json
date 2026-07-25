@@ -1,0 +1,332 @@
+{
+  "name": "RAG AI Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {}
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "<GOOGLE_DRIVE_FOLDER_ID>",
+          "mode": "list",
+          "cachedResultName": "Documents",
+          "cachedResultUrl": ""
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "ef8d64a4-d12c-4c55-906e-59ca13813c80",
+      "name": "Google Drive Trigger",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "<GOOGLEDRIVEOAUTH2API_ID>",
+          "name": "googleDriveOAuth2Api"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        208,
+        0
+      ],
+      "id": "c366b6f1-8d03-40c7-9c1a-7eacdd57c456",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "<GOOGLEDRIVEOAUTH2API_ID>",
+          "name": "googleDriveOAuth2Api"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "embeddingBatchSize": 1,
+        "options": {
+          "queryName": "match_documents"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        416,
+        0
+      ],
+      "id": "ced43f0c-7424-4178-ba09-3df6f79e7af3",
+      "name": "Supabase Vector Store",
+      "credentials": {
+        "supabaseApi": {
+          "id": "<SUPABASEAPI_ID>",
+          "name": "supabaseApi"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        560,
+        384
+      ],
+      "id": "cf9b1b1d-d24e-4748-b309-1d44d0aef0f6",
+      "name": "Embeddings Google Gemini",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "<GOOGLEPALMAPI_ID>",
+          "name": "googlePalmApi"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        320,
+        256
+      ],
+      "id": "7abbc358-a2fa-425f-a4e7-044545b198fb",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are an AI document assistant. Always retrieve relevant context from the Vector Store before answering. If the retrieved context is insufficient, say you cannot determine the answer from the uploaded documents. Keep responses concise and grounded."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -160,
+        288
+      ],
+      "id": "a0460133-c581-47d3-a6d3-8c1198227fbc",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "public": true,
+        "initialMessages": "Hi there! \ud83d\udc4b\nI'm your AI Document Assistant. How can I help you today?",
+        "options": {
+          "inputPlaceholder": "Type your question..",
+          "subtitle": "Ask questions about your uploaded documents.",
+          "title": "AI Document Assistant",
+          "customCss": ":root {\n  /* --- WhatsApp Brand Palette --- */\n  --chat--color--primary: #00a884;               /* WhatsApp Vibrant Teal */\n  --chat--color--primary-shade-50: #008f72;      /* Deep Teal Hover */\n  --chat--color--primary--shade-100: #00755e;     /* Press/Active Teal */\n  --chat--color--secondary: #d9fdd3;             /* WhatsApp Outgoing Bubble Green */\n  --chat--color-secondary-shade-50: #cfe9cc;     /* Outgoing Bubble Border/Hover */\n  --chat--color-white: #ffffff;\n  --chat--color-light: #f0f2f5;                  /* Classic WhatsApp App Background */\n  --chat--color-light-shade-50: #eaebeb;          /* Subtle borders and panels */\n  --chat--color-light-shade-100: #d1d7db;         /* WhatsApp Divider Gray */\n  --chat--color-medium: #8696a0;                 /* WhatsApp Secondary Text Muted Gray */\n  --chat--color-dark: #111b21;                   /* WhatsApp Deep Charcoal Dark Text */\n  --chat--color-disabled: #bac0c4;\n  --chat--color-typing: #00a884;                 /* Active typing matches brand teal */\n\n  /* --- Layout & Typography --- */\n  --chat--spacing: 0.875rem;                      /* Tighter chat-optimized layout grid */\n  --chat--border-radius: 0.5rem;                  /* Clean UI container rounding */\n  --chat--transition-duration: 0.2s;\n  --chat--font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Helvetica, Arial, sans-serif;\n\n  /* --- Window Dimensions & Elevation --- */\n  --chat--window--width: 380px;\n  --chat--window--height: 600px;\n  --chat--window--bottom: 20px;\n  --chat--window--right: 20px;\n  --chat--window--z-index: 9999;\n  --chat--window--border: 1px solid var(--chat--color-light-shade-100);\n  --chat--window--border-radius: 12px;           /* Modern framing */\n  --chat--window--margin-bottom: var(--chat--spacing);\n  --chat--window--box-shadow: 0 6px 18px rgba(11, 20, 26, 0.15); /* Soft, real-world depth shadow */\n\n  /* --- WhatsApp Style Header --- */\n  --chat--header-height: auto;\n  --chat--header--padding: 0.75rem 1rem;\n  --chat--header--background: #008069;           /* Core WhatsApp Top Bar Teal */\n  --chat--header--color: var(--chat--color-white);\n  --chat--header--border-top: none;\n  --chat--header--border-bottom: none;\n  --chat--header--border-left: none;\n  --chat--header--border-right: none;\n  --chat--heading--font-size: 1.15rem;           /* Balanced header text size */\n  --chat--subtitle--font-size: 0.8rem;\n  --chat--subtitle--line-height: 1.3;\n\n  /* --- Message Bubble Dynamics --- */\n  --chat--message--font-size: 0.925rem;\n  --chat--message--padding: 0.5rem 0.75rem;      /* Native compact text framing */\n  --chat--message--border-radius: 8px;           /* Snug message corners */\n  --chat--message-line-height: 1.45;\n  --chat--message--margin-bottom: 0.5rem;         /* Stacked tightly like true logs */\n  \n  /* Incoming (Bot) Bubble Styles */\n  --chat--message--bot--background: var(--chat--color-white);\n  --chat--message--bot--color: var(--chat--color-dark);\n  --chat--message--bot--border: none;\n  \n  /* Outgoing (User) Bubble Styles */\n  --chat--message--user--background: var(--chat--color--secondary);\n  --chat--message--user--color: var(--chat--color-dark); /* Dark text on light green bubble */\n  --chat--message--user--border: none;\n  \n  --chat--message--pre--background: rgba(0, 0, 0, 0.04);\n  --chat--messages-list--padding: 1rem;\n\n  /* --- Floating Launcher Button --- */\n  --chat--toggle--size: 52px;\n  --chat--toggle--width: var(--chat--toggle--size);\n  --chat--toggle--height: var(--chat--toggle--size);\n  --chat--toggle--border-radius: 50%;\n  --chat--toggle--background: var(--chat--color--primary);\n  --chat--toggle--hover--background: var(--chat--color--primary-shade-50);\n  --chat--toggle--active--background: var(--chat--color--primary--shade-100);\n  --chat--toggle--color: var(--chat--color-white);\n  --chat--toggle--box-shadow: 0 4px 10px rgba(0, 168, 132, 0.3);\n\n  /* --- Input Area Bar --- */\n  --chat--textarea--height: auto;\n  --chat--textarea--max-height: 8rem;\n  --chat--input--font-size: 0.95rem;\n  --chat--input--border: 1px solid var(--chat--color-white);\n  --chat--input--border-radius: 20px;            /* Pill shaped text field input */\n  --chat--input--padding: 0.5rem 1rem;\n  --chat--input--background: var(--chat--color-white);\n  --chat--input--text-color: var(--chat--color-dark);\n  --chat--input--line-height: 1.4;\n  --chat--input--placeholder--font-size: var(--chat--input--font-size);\n  --chat--input--border-active: 1px solid var(--chat--color-light-shade-100);\n  --chat--input--left--panel--width: 2rem;\n\n  /* --- System Dialog Buttons --- */\n  --chat--button--padding: 0.5rem 1rem;\n  --chat--button--border-radius: 20px;\n  --chat--button--font-size: 0.85rem;\n  --chat--button--line-height: 1.2;\n  --chat--button--color--primary: var(--chat--color-white);\n  --chat--button--background--primary: var(--chat--color--primary);\n  --chat--button--border--primary: none;\n  --chat--button--color--primary--hover: var(--chat--color-white);\n  --chat--button--background--primary--hover: var(--chat--color--primary-shade-50);\n  --chat--button--border--primary--hover: none;\n  --chat--button--color--primary--disabled: var(--chat--color-white);\n  --chat--button--background--primary--disabled: var(--chat--color-disabled);\n  --chat--button--border--primary--disabled: none;\n\n  --chat--button--color--secondary: var(--chat--color-dark);\n  --chat--button--background--secondary: var(--chat--color-light-shade-50);\n  --chat--button--border--secondary: none;\n  --chat--button--color--secondary--hover: var(--chat--color-dark);\n  --chat--button--background--secondary--hover: var(--chat--color-light-shade-100);\n  --chat--button--border--secondary--hover: none;\n  --chat--button--color--secondary--disabled: var(--chat--color-disabled);\n  --chat--button--background--secondary--disabled: var(--chat--color-light);\n  --chat--button--border--secondary--disabled: none;\n  --chat--close--button--color-hover: var(--chat--color--primary);\n\n  /* --- Action Icons Interaction --- */\n  --chat--input--send--button--background: transparent;\n  --chat--input--send--button--color: var(--chat--color--primary);\n  --chat--input--send--button--background-hover: transparent;\n  --chat--input--send--button--color-hover: var(--chat--color--primary-shade-50);\n  --chat--input--file--button--background: transparent;\n  --chat--input--file--button--color: var(--chat--color-medium);\n  --chat--input--file--button--background-hover: transparent;\n  --chat--input--file--button--color-hover: var(--chat--color-dark);\n  --chat--files-spacing: 0.35rem;\n\n  /* --- Background & Canvas Panels --- */\n  --chat--body--background: #efeae2;             /* WhatsApp Subtle Beige Matte Base Canvas */\n  --chat--footer--background: var(--chat--color-light); /* Off-white bottom keyboard tray */\n  --chat--footer--color: var(--chat--color-dark);\n}\n\n/* --- Strict Production Custom Overrides --- */\n\n/* Message Bubble Alignment Layout styling */\n.chat-message {\n  max-width: 82%; \n  box-shadow: 0 1px 0.5px rgba(11, 20, 26, 0.08); /* Native flat card bubble shadow */\n  position: relative;\n}\n\n/* Distinct WhatsApp Rounded Tail Styling Variants */\n.chat-message.bot {\n  border-top-left-radius: 0px !important;       /* Corner accent for message chains */\n}\n\n.chat-message.user {\n  border-top-right-radius: 0px !important;      /* Corner accent for user response */\n}\n\n/* Optional Custom Scrollbar formatting for pure sleek finish */\n.chat-messages-list::-webkit-scrollbar {\n  width: 6px;\n}\n.chat-messages-list::-webkit-scrollbar-thumb {\n  background-color: rgba(11, 20, 26, 0.2);\n  border-radius: 3px;\n}\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -336,
+        288
+      ],
+      "id": "023a4818-8a7b-4415-86dd-3e063c5845ed",
+      "name": "When chat message received",
+      "webhookId": "<WEBHOOK_ID>"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        -288,
+        496
+      ],
+      "id": "f28ffef3-6d9b-4fb2-baff-dda7fd05d4ae",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "<GOOGLEPALMAPI_ID>",
+          "name": "googlePalmApi"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        -144,
+        496
+      ],
+      "id": "4758e033-57b6-4679-87d9-774ae9deee06",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Work with data from supabase vector database",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "topK": 5,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        48,
+        496
+      ],
+      "id": "ad88eb00-a926-4cb7-af32-5903579ff31a",
+      "name": "Vector_Store",
+      "credentials": {
+        "supabaseApi": {
+          "id": "<SUPABASEAPI_ID>",
+          "name": "supabaseApi"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Google Drive Trigger": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Google Gemini": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          },
+          {
+            "node": "Vector_Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        []
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Vector_Store": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "234f85ea-9c22-4426-9e2a-236adeabe886",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "780164e0694c7938d897fa8204c6cf9031a56b752ae62fbd19af070a3c573839"
+  },
+  "nodeGroups": [],
+  "id": "2OJF4nYMi7Cbysuw",
+  "tags": []
+}
