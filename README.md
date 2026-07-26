@@ -170,7 +170,7 @@ git clone https://github.com/yourusername/AI-RAG-Agent.git
 Import the workflow into n8n.
 
 ```
-workflow/RAG_AI_Agent_Sanitized.json
+workflow/RAG_AI_Agent.json
 ```
 
 ---
