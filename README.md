@@ -1,4 +1,4 @@
-# AI RAG Agent
+<img width="1272" height="500" alt="image" src="https://github.com/user-attachments/assets/be9e3353-c10b-41a0-8f45-8af9c9357aa6" /># AI RAG Agent
 
 An end-to-end Retrieval-Augmented Generation (RAG) application that enables users to chat with their documents using Google's Gemini models, vector search, and n8n automation.
 
@@ -125,13 +125,17 @@ When a user asks a question:
 
 ## Chat Interface
 
-![Chat](screenshots/chat.jpeg)
+<p align="center">
+  <img src="screenshots/chat.jpeg" width="350">
+</p>
 
 ---
 
 ## Example Conversation
 
-![Conversation](screenshots/query.jpeg)
+<p align="center">
+  <img src="screenshots/query.jpeg" width="350">
+</p>
 
 ---
 
