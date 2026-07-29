@@ -8,16 +8,16 @@ The system automatically ingests uploaded documents, generates embeddings, store
 
 # Features
 
-- 📄 Chat with PDFs and documents
-- 🤖 AI-powered Retrieval-Augmented Generation (RAG)
-- 🔍 Semantic vector search
-- ⚡ Automatic document indexing
-- 🧠 Conversational memory
-- 📂 Google Drive document ingestion
-- 🌐 Web-based chat interface
-- 🔄 Fully automated workflow using n8n
-- ☁️ Supabase Vector Database
-- 🚀 Powered by Google Gemini
+- Chat with PDFs and documents
+- AI-powered Retrieval-Augmented Generation (RAG)
+- Semantic vector search
+- Automatic document indexing
+- Conversational memory
+- Google Drive document ingestion
+- Web-based chat interface
+- Fully automated workflow using n8n
+- Supabase Vector Database
+- Powered by Google Gemini
 
 ---
 
